@@ -167,7 +167,7 @@ if count(g:bundle_groups, 'tmux')
 endif
 
 if count(g:bundle_groups, 'markdown')
-    Plug 'plasticboy/vim-markdown', {'for': 'md'}
+	Plug 'plasticboy/vim-markdown', {'for': 'md'}
     " https://github.com/suan/vim-instant-markdown
     " npm -g install instant-markdown-d
     " Plug 'suan/vim-instant-markdown'
@@ -181,6 +181,13 @@ if count(g:bundle_groups, 'golang')
     " 2. :GoInstallBinaries
     " vimgo  https://github.com/fatih/vim-go
     Plug 'fatih/vim-go', {'for': 'go'}
+	let g:go_def_mode='gopls'
+	let g:go_info_mode='gopls'
+    " Plug 'myitcv/govim', {'for': 'go'}
+endif
+
+if count(g:bundle_groups, 'verilog')
+    Plug 'vhda/verilog_systemverilog.vim'
 endif
 
 
@@ -377,6 +384,7 @@ if has_key(g:plugs, 'ale')
     let g:ale_linters = {
     \   'python': ['flake8'],
     \   'javascript': ['eslint'],
+    \   'go': ['gopls'],
     \}
 
     " E501 -> 120 chars
