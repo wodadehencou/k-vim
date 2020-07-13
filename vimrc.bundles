@@ -10,14 +10,14 @@
 
 " 非兼容vi模式。去掉讨厌的有关vi一致性模式，避免以前版本的一些bug和局限
 set nocompatible
-filetype off " required! turn off
+" filetype off " required! turn off
 
 " ################### 插件管理 ###################
 
 " inspired by spf13, 自定义需要的插件集合
 if !exists('g:bundle_groups')
     " let g:bundle_groups=['python', 'javascript', 'golang', 'php', 'ruby', 'shell', 'markdown', 'html', 'css', 'less', 'coffeescript', 'tmux', 'json', 'beta']
-    let g:bundle_groups=['python', 'markdown', 'golang', 'shell']
+    let g:bundle_groups=['python', 'markdown', 'golang', 'shell', 'cuda', 'rust']
 endif
 
 " ----------------------------------------------------------------------------
@@ -39,13 +39,14 @@ endif
 " Group dependencies, vim-snippets depends on ultisnips
 " 代码片段快速插入 (snippets中,是代码片段资源,需要学习)
 " Snippets are separated from the engine. Add this if you want them:
-Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+" Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 
 " auto complete
 " 代码自动补全
 " 迄今为止用到的最好的自动VIM自动补全插件
 " 重启 :YcmRestartServer
-Plug 'Valloric/YouCompleteMe'
+" Plug 'ycm-core/YouCompleteMe'
+Plug 'zxqfl/tabnine-vim'
 " 自动补全单引号，双引号等
 Plug 'Raimondi/delimitMate'
 " 自动补全html/xml标签
@@ -146,7 +147,7 @@ Plug 'tomasr/molokai'
 " nerdtree nerdtreetabs
 Plug 'scrooloose/nerdtree' | Plug 'jistr/vim-nerdtree-tabs'
 " ctrlspace
-Plug 'vim-ctrlspace/vim-ctrlspace'
+" Plug 'vim-ctrlspace/vim-ctrlspace'
 " tagbar
 Plug 'majutsushi/tagbar'
 
@@ -186,8 +187,16 @@ if count(g:bundle_groups, 'golang')
     " Plug 'myitcv/govim', {'for': 'go'}
 endif
 
+if count(g:bundle_groups, 'cuda')
+    Plug 'bfrg/vim-cuda-syntax'
+endif
+
 if count(g:bundle_groups, 'verilog')
     Plug 'vhda/verilog_systemverilog.vim'
+endif
+
+if count(g:bundle_groups, 'cuda')
+    Plug 'rust-lang/rust.vim'
 endif
 
 
@@ -423,6 +432,7 @@ endif
 " ################### 自动补全 ###################
 
 " YouCompleteMe {{{
+    let g:ycm_clangd_binary_path = "/usr/local/opt/llvm/bin/clangd"
     "youcompleteme  默认tab  s-tab 和自动补全冲突
     "let g:ycm_key_list_select_completion=['<c-n>']
     let g:ycm_key_list_select_completion = ['<Down>']
@@ -436,7 +446,7 @@ endif
     " 开启语法关键字补全
     let g:ycm_seed_identifiers_with_syntax=1
     " 回车作为选中
-    let g:ycm_key_list_stop_completion = ['<CR>']
+	" let g:ycm_key_list_stop_completion = ['<CR>']
 
     "let g:ycm_seed_identifiers_with_syntax=1   "语言关键字补全, 不过python关键字都很短，所以，需要的自己打开
 
@@ -472,14 +482,14 @@ endif
 
 
 " ultisnips {{{
-    let g:UltiSnipsExpandTrigger       = "<tab>"
-    let g:UltiSnipsJumpForwardTrigger  = "<tab>"
-    let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
+    let g:UltiSnipsExpandTrigger       = "<leader><tab>"
+    let g:UltiSnipsJumpForwardTrigger  = "<c-j>"
+    let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
     let g:UltiSnipsSnippetDirectories  = ['UltiSnips']
     let g:UltiSnipsSnippetsDir = '~/.vim/UltiSnips'
     " 定义存放代码片段的文件夹 .vim/UltiSnips下，使用自定义和默认的，将会的到全局，有冲突的会提示
     " 进入对应filetype的snippets进行编辑
-    map <leader>us :UltiSnipsEdit<CR>
+	map <leader>us :UltiSnipsEdit<CR>
 
     " ctrl+j/k 进行选择
     func! g:JInYCM()
@@ -498,8 +508,8 @@ endif
         endif
     endfunction
     inoremap <c-j> <c-r>=g:JInYCM()<cr>
-    au BufEnter,BufRead * exec "inoremap <silent> " . g:UltiSnipsJumpBackwordTrigger . " <C-R>=g:KInYCM()<cr>"
-    let g:UltiSnipsJumpBackwordTrigger = "<c-k>"
+    au BufEnter,BufRead * exec "inoremap <silent> " . g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:KInYCM()<cr>"
+    " let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
 " }}}
 
 
@@ -507,6 +517,20 @@ endif
     " for python docstring ",优化输入
     au FileType python let b:delimitMate_nesting_quotes = ['"']
     au FileType php let delimitMate_matchpairs = "(:),[:],{:}"
+	let g:delimitMate_expand_cr = 2
+	let g:delimitMate_expand_space = 1
+	let g:delimitMate_balance_matchpairs = 1
+
+	imap <expr> <tab> delimitMate#ShouldJump() ? "<Plug>delimitMateS-Tab" : "<tab>"
+	inoremap <expr> <S-Tab> delimitMate#JumpAny()
+	" imap <expr> <c-CR> delimitMate#WithinEmptyPair() ?
+			" \ "<Plug>delimitMateCR" :
+			" \ "<CR>"
+	imap <expr> <CR> pumvisible()
+					\ ? "\<C-Y>"
+					\ : "<Plug>delimitMateCR"
+	" imap <expr> <s-cr> "<Plug>delimitMateCR"
+	" imap <expr> <C-BS> "<Plug>delimitMateBS"
     " 关闭某些类型文件的自动补全
     "au FileType mail let b:delimitMate_autoclose = 0
 " }}}
@@ -766,11 +790,11 @@ endif
 
 " Vim Workspace Controller
 " ctrlspace {{{
-    let g:airline_exclude_preview = 1
-    hi CtrlSpaceSelected guifg=#586e75 guibg=#eee8d5 guisp=#839496 gui=reverse,bold ctermfg=10 ctermbg=7 cterm=reverse,bold
-    hi CtrlSpaceNormal   guifg=#839496 guibg=#021B25 guisp=#839496 gui=NONE ctermfg=12 ctermbg=0 cterm=NONE
-    hi CtrlSpaceSearch   guifg=#cb4b16 guibg=NONE gui=bold ctermfg=9 ctermbg=NONE term=bold cterm=bold
-    hi CtrlSpaceStatus   guifg=#839496 guibg=#002b36 gui=reverse term=reverse cterm=reverse ctermfg=12 ctermbg=8
+    " let g:airline_exclude_preview = 1
+    " hi CtrlSpaceSelected guifg=#586e75 guibg=#eee8d5 guisp=#839496 gui=reverse,bold ctermfg=10 ctermbg=7 cterm=reverse,bold
+    " hi CtrlSpaceNormal   guifg=#839496 guibg=#021B25 guisp=#839496 gui=NONE ctermfg=12 ctermbg=0 cterm=NONE
+    " hi CtrlSpaceSearch   guifg=#cb4b16 guibg=NONE gui=bold ctermfg=9 ctermbg=NONE term=bold cterm=bold
+    " hi CtrlSpaceStatus   guifg=#839496 guibg=#002b36 gui=reverse term=reverse cterm=reverse ctermfg=12 ctermbg=8
 " }}}
 
 

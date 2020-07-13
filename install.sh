@@ -91,9 +91,10 @@ cd $CURRENT_DIR/bundle/YouCompleteMe/
 git submodule update --init --recursive
 if [ `which clang` ]   # check system clang
 then
-    python install.py --clang-completer --system-libclang   # use system clang
+    python3 install.py --clangd-completer --system-libclang --go-completer --rust-completer   # use system clang
 else
-    python install.py --clang-completer
+    python3 install.py --clangd-completer --go-completer --rust-completer
 fi
+#    python3 install.py --clang-completer --go-completer --rust-completer --java-completer
 
 echo "Install Done!"

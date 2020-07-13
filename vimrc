@@ -295,7 +295,7 @@ set wildignore=*.o,*~,*.pyc,*.class
 autocmd InsertLeave * if pumvisible() == 0|pclose|endif
 
 " 回车即选中当前项
-inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"
+"inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"
 
 " In the quickfix window, <CR> is used to jump to the error under the
 " cursor, so undefine the mapping there.
@@ -637,15 +637,17 @@ set lazyredraw          " redraw only when we need to.
 
 " Set extra options when running in GUI mode
 if has("gui_running")
-    set guifont=Monaco:h14
     if has("gui_gtk2")   "GTK2
         set guifont=Monaco\ 12,Monospace\ 12
     endif
 	if has("win32")
 		set guifont=Consolas:h10
 	endif
-	if has("unix")
+	if has("x11")
 		set guifont=Liberation\ Mono\ 10
+	endif
+	if has("gui_macvim")
+		set guifont=Monaco:h14
 	endif
     set guioptions-=T
     set guioptions+=e
