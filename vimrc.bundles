@@ -45,12 +45,12 @@ endif
 " 代码自动补全
 " 迄今为止用到的最好的自动VIM自动补全插件
 " 重启 :YcmRestartServer
-" Plug 'ycm-core/YouCompleteMe'
-Plug 'zxqfl/tabnine-vim'
+Plug 'ycm-core/YouCompleteMe'
+" Plug 'zxqfl/tabnine-vim'
 " 自动补全单引号，双引号等
 Plug 'Raimondi/delimitMate'
 " 自动补全html/xml标签
-Plug 'docunext/closetag.vim', { 'for': ['html', 'xml'] }
+" Plug 'docunext/closetag.vim', { 'for': ['html', 'xml'] }
 
 " quick edit
 " 快速注释
@@ -137,7 +137,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'kien/rainbow_parentheses.vim'
 " 主题 solarized
 " solarized
-Plug 'altercation/vim-colors-solarized'
+" Plug 'altercation/vim-colors-solarized'
 " molokai
 " 主题 molokai
 Plug 'tomasr/molokai'
@@ -195,7 +195,7 @@ if count(g:bundle_groups, 'verilog')
     Plug 'vhda/verilog_systemverilog.vim'
 endif
 
-if count(g:bundle_groups, 'cuda')
+if count(g:bundle_groups, 'rust')
     Plug 'rust-lang/rust.vim'
 endif
 
@@ -394,6 +394,7 @@ if has_key(g:plugs, 'ale')
     \   'python': ['flake8'],
     \   'javascript': ['eslint'],
     \   'go': ['gopls'],
+    \   'rust': ['analyzer'],
     \}
 
     let g:ale_python_flake8_options="--ignore=E121,E123,E126,E226,E24,E704,W503 --max-line-length=120"
@@ -478,6 +479,16 @@ endif
         \ 'tagbar' : 1,
         \ 'gitcommit' : 1,
         \}
+
+	let g:ycm_language_server =
+		\ [
+		\   {
+		\     'name': 'rust',
+		\     'cmdline': ['rust-analyzer'],
+		\     'filetypes': ['rust'],
+		\     'project_root_files': ['Cargo.toml']
+		\   }
+		\ ]
 " }}}
 
 
